@@ -32,6 +32,32 @@ export class RandomPriceProvider implements IPriceProvider {
 // Configurable exchange price provider
 //////////////////////////////////////////////////////////////////////////////////////////
 
+export class FilePriceProvider implements IPriceProvider {
+
+    private _pair: string;
+    private _filename!: string;
+
+    constructor(pair: string, filename: string) {
+        this._pair = pair;
+        this._filename = filename;
+    }
+
+    getPair(): string {
+        return this._pair;
+    }
+
+    async getPrice(): Promise<number> {
+        let data = fs.readFileSync(this._filename, 'utf8');
+        let prices = JSON.parse(data);
+        let price = prices[this._pair];
+        if (price) {
+            return price;
+        } else {
+            throw new Error(`No price found for pair ${this._pair}`);
+        }
+    }
+}
+
 export class WsLimitedPriceProvider implements IPriceProvider {
 
     private _logger!: any;

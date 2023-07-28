@@ -1,0 +1,68 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IncentivePoolRewardServices",
+  "sourceName": "contracts/tokenPools/lib/IncentivePoolRewardServices.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "contract IIIncentivePoolReceiver",
+          "name": "incentivePoolReceiver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountWei",
+          "type": "uint256"
+        }
+      ],
+      "name": "IncentivePoolRewardServiceDailyAuthorizedIncentiveComputed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "contract IIIncentivePoolReceiver",
+          "name": "incentivePoolReceiver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountWei",
+          "type": "uint256"
+        }
+      ],
+      "name": "IncentivePoolRewardServiceTopupComputed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "contract IIIncentivePoolReceiver",
+          "name": "incentivePoolReceiver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountWei",
+          "type": "uint256"
+        }
+      ],
+      "name": "IncentivePoolRewardServiceTopupRequestReceived",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122036cb16b06b0d115775c667c58f7cdf5bf33f5aa02c249b904ef08cf5ab732ad664736f6c63430007060033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122036cb16b06b0d115775c667c58f7cdf5bf33f5aa02c249b904ef08cf5ab732ad664736f6c63430007060033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -201,11 +201,11 @@ class DataProvider {
             }
         }
 
-        if (hashes.length > 0) {
-            this.logger.info(`Ftso indices: ${ftsoIndices.map(x => x.toString()).toString()}`)
-            var fnToEncode = this.priceSubmitterWeb3Contract.methods.submitPriceHashes(epochId, ftsoIndices, hashes);
-            await this.signAndFinalize3("Submit prices", this.priceSubmitterWeb3Contract.options.address, fnToEncode, "2500000");
-        }
+        // if (hashes.length > 0) {
+        //     this.logger.info(`Ftso indices: ${ftsoIndices.map(x => x.toString()).toString()}`)
+        //     var fnToEncode = this.priceSubmitterWeb3Contract.methods.submitPriceHashes(epochId, ftsoIndices, hashes);
+        //     await this.signAndFinalize3("Submit prices", this.priceSubmitterWeb3Contract.options.address, fnToEncode, "2500000");
+        // }
     }
 
     async revealPrices(lst: DataProviderData[], epochId: BigNumber): Promise<void> {
@@ -289,68 +289,90 @@ class DataProvider {
         }, epochRevealTimeEnd - new Date().getTime());
 
         if (diffSubmit > submitPeriod - conf.submitOffset && this.ftso2symbol.size >= this.ftsosCount) {
-            setTimeout(() => {
-                this.logger.info(`Submit in ${diffSubmit - submitPeriod + conf.submitOffset}ms`)
-                this.execute(async () => { await this.submitPriceHashes(this.data); });
-            }, diffSubmit - submitPeriod + conf.submitOffset);
+             setTimeout(() => {
+                 this.logger.info(`Submit in ${diffSubmit - submitPeriod + conf.submitOffset}ms`)
+                 // this.execute(async () => { await this.submitPriceHashes(this.data); });
+             }, diffSubmit - submitPeriod + conf.submitOffset);
 
-            setTimeout(() => {
-                this.logger.info(`Reveal in ${diffSubmit + conf.revealOffset}ms`)
-                this.execute(async () => { await this.revealPrices(this.data, epochId); });
-            }, diffSubmit + conf.revealOffset);
+            // setTimeout(() => {
+            //     this.logger.info(`Reveal in ${diffSubmit + conf.revealOffset}ms`)
+            //     this.execute(async () => { await this.revealPrices(this.data, epochId); });
+            // }, diffSubmit + conf.revealOffset);
         }
 
         setTimeout(() => this.setupSubmissionAndReveal(), diffSubmit);
     }
 
     setupEvents() {
-        this.priceSubmitterContract.on("PriceHashesSubmitted", async (submitter: string, epochId: any, ftsos: string[], hashes: string[], timestamp: any) => {
-            if (submitter != this.account.address) return;
+        // this.priceSubmitterContract.on("PriceHashesSubmitted", async (submitter: string, epochId: any, ftsos: string[], hashes: string[], timestamp: any) => {
+        //     this.logger.info('PriceHashesSubmitted event received')
+        //     if (submitter != this.account.address) return;
 
-            let epochIdStr = epochId.toString();
-            for (let ftso of ftsos) {
-                let symbol = this.ftso2symbol.get(ftso)!;
-                let p: DataProviderData = this.symbol2dpd.get(symbol)!;
-                let priceInfo = this.symbol2epochId2priceInfo.get(symbol)?.get(epochIdStr);
-                priceInfo?.moveToNextStatus();
-                if (p) {
-                    this.logger.info(`${p.label} | Price submitted in epoch ${epochIdStr}`);
-                }
-            }
-        });
+        //     let epochIdStr = epochId.toString();
+        //     for (let ftso of ftsos) {
+        //         let symbol = this.ftso2symbol.get(ftso)!;
+        //         let p: DataProviderData = this.symbol2dpd.get(symbol)!;
+        //         let priceInfo = this.symbol2epochId2priceInfo.get(symbol)?.get(epochIdStr);
+        //         priceInfo?.moveToNextStatus();
+        //         if (p) {
+        //             this.logger.info(`${p.label} | Price submitted in epoch ${epochIdStr}`);
+        //         }
+        //     }
+        // });
 
-        this.priceSubmitterContract.on("PricesRevealed", async (voter: string, epochId: any, ftsos: string[], prices: any[], randoms: string[], timestamp: any) => {
-            if (voter != this.account.address) return;
+        // this.priceSubmitterContract.on("PricesRevealed", async (voter: string, epochId: any, ftsos: string[], prices: any[], randoms: string[], timestamp: any) => {
+        //     this.logger.info('PricesRevealed event received')
+        //     if (voter != this.account.address) return;
 
-            let epochIdStr = epochId.toString();
-            let i = 0;
-            for (let ftso of ftsos) {
-                let symbol = this.ftso2symbol.get(ftso)!;
-                let p: DataProviderData = this.symbol2dpd.get(symbol)!;
-                let price = prices[i];
+        //     let epochIdStr = epochId.toString();
+        //     let i = 0;
+        //     for (let ftso of ftsos) {
+        //         let symbol = this.ftso2symbol.get(ftso)!;
+        //         let p: DataProviderData = this.symbol2dpd.get(symbol)!;
+        //         let price = prices[i];
 
-                this.logger.info(`${p.label} | Price revealed in epoch ${epochIdStr}: ${(price / 10 ** p.decimals).toFixed(p.decimals)}$.`);
+        //         this.logger.info(`${p.label} | Price revealed in epoch ${epochIdStr}: ${(price / 10 ** p.decimals).toFixed(p.decimals)}$.`);
 
-                let priceInfo = this.symbol2epochId2priceInfo.get(symbol)?.get(epochIdStr);
-                if (priceInfo) {
-                    priceInfo.moveToNextStatus();
-                    if (p) {
-                        this.logger.info(`${p.label} | Price that was submitted: ${(priceInfo.priceSubmitted / 10 ** 5).toFixed(5)}$`);
-                        if (priceInfo.priceSubmitted != (price as number)) {
-                            this.logger.error(`${p.label} | Price submitted and price revealed are diffent!`);
-                        }
-                    }
-                }
-                i++;
-            }
-        });
+        //         let priceInfo = this.symbol2epochId2priceInfo.get(symbol)?.get(epochIdStr);
+        //         if (priceInfo) {
+        //             priceInfo.moveToNextStatus();
+        //             if (p) {
+        //                 this.logger.info(`${p.label} | Price that was submitted: ${(priceInfo.priceSubmitted / 10 ** 5).toFixed(5)}$`);
+        //                 if (priceInfo.priceSubmitted != (price as number)) {
+        //                     this.logger.error(`${p.label} | Price submitted and price revealed are diffent!`);
+        //                 }
+        //             }
+        //         }
+        //         i++;
+        //     }
+        // });
 
+        // Define the CSV file path
+        const csvFilePath = conf.outputFile;
+
+        // Check if the CSV file exists, and create it if it doesn't
+        if (!fs.existsSync(csvFilePath)) {
+            fs.writeFileSync(csvFilePath, 'Symbol,Epoch ID,Price,Finalization Type,Rewarded,Low Price,High Price,Timestamp\n');
+        }
+
+        this.logger.info("Subscribing to PriceFinalized events");
+        const ethers = require('ethers');
+        
         this.ftsoContracts.forEach(contractWithSymbol => {
             contractWithSymbol.contract.on("PriceFinalized", async (
-                epochId: any, price: any, rewardedFtso: boolean,
-                lowRewardPrice: any, highRewardPrice: any, finalizationType: any,
+                epochId: any, 
+                price: any,
+                rewardedFtso: boolean,
+                lowIQRRewardPrice: any, 
+                highIQRRewardPrice: any, 
+                lowElasticBandRewardPrice: any,
+                highElasticBandRewardPrice: any,
+                finalizationType: any,
                 timestamp: any) => {
-                this.logger.info(`Price finalized for ${contractWithSymbol.symbol} in epochId ${epochId}: price: ${(price / 10 ** 5).toFixed(5)}$,  finalization type: ${finalizationType}, rewarded: ${rewardedFtso}, low price: ${(lowRewardPrice / 10 ** 5).toFixed(5)}$, high price: ${(highRewardPrice / 10 ** 5).toFixed(5)}$, timestamp: ${timestamp.toString()}`)
+                    this.logger.info('PriceFinalized event received')
+                this.logger.info(`Price finalized for ${contractWithSymbol.symbol} in epochId ${epochId}: price: ${(price / 10 ** 5).toFixed(5)}$,  finalization type: ${finalizationType}, rewarded: ${rewardedFtso}, low price: ${(lowIQRRewardPrice / 10 ** 5).toFixed(5)}$, high price: ${(highIQRRewardPrice / 10 ** 5).toFixed(5)}$, timestamp: ${timestamp.toString()}`)
+                const csvLine = `${contractWithSymbol.symbol},${epochId},${price},${finalizationType},${rewardedFtso},${(lowIQRRewardPrice / 10 ** 5).toFixed(5)},${(highIQRRewardPrice / 10 ** 5).toFixed(5)},${timestamp},${lowElasticBandRewardPrice},${highElasticBandRewardPrice}\n`;
+                fs.appendFileSync(csvFilePath, csvLine);
             })
         })
 
@@ -368,8 +390,8 @@ class DataProvider {
         let accountPrivateKey: string = ""
 
         this.logger.info(`Starting Flare Price Provider v${version}`)
-
-        if ( process.env.PROJECT_SECRET===undefined ) {
+        
+        if ( process.env.PROJECT_SECRET!==undefined ) {
             this.logger.info(`   * account read from .env`)
             accountPrivateKey = (conf.accountPrivateKey as string)
         } else if (process.env.PROJECT_SECRET!==undefined) {
@@ -420,6 +442,30 @@ class DataProvider {
             return; // No point in continuing without ftso registry
         }
 
+        // 1a. get all ftsos
+        // try {
+        //     const ftsos = await this.ftsoManagerWeb3Contract.methods.getFtsos().call();
+        //     this.logger.info(`FTSOs: ${JSON.stringify(ftsos)}`);
+        //     for (let ftso of ftsos) {
+        //         let contract = await getWeb3Contract(this.web3, ftso, "Ftso");
+        //         try {
+        //             let symbol = await contract.methods.symbol().call();
+        //             this.ftsoContracts.push({
+        //             symbol,
+        //             contract: await getContract(this.provider, ftso, "Ftso")
+        //             });
+        //             this.logger.info(`Symbol: ${symbol}`);
+        //             let index = await this.ftsoRegistryContract.methods.getFtsoIndex(symbol).call();
+        //             this.logger.info(`INDEX: ${index.toString()}`)
+        //             this.symbol2Index.set(symbol, index);
+        //         } catch (err: any) {
+        //             this.logger.error(`symbol() | ${err}`)
+        //         }
+        //     }            
+        // } catch (err: any) {
+        //     this.logger.error(`getFtsos() | ${err}`);            
+        // }
+
         // 2. get ftsos
         try {
             let voterWhitelisterAddress = await this.priceSubmitterWeb3Contract.methods.getVoterWhitelister().call();
@@ -436,6 +482,7 @@ class DataProvider {
                             symbol,
                             contract: await getContract(this.provider, ftso, "Ftso")
                         });
+
                         this.logger.info(`Symbol: ${symbol}`);
                         this.ftso2symbol.set(ftso, symbol);
                         let index = await this.ftsoRegistryContract.methods.getFtsoIndex(symbol).call();
@@ -472,6 +519,7 @@ class DataProvider {
         }
 
         this.setupEvents();
+        this.logger.info('Done')
     }
 }
 

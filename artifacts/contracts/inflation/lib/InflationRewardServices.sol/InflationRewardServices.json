@@ -1,0 +1,68 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "InflationRewardServices",
+  "sourceName": "contracts/inflation/lib/InflationRewardServices.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "contract IIInflationReceiver",
+          "name": "inflationReceiver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountWei",
+          "type": "uint256"
+        }
+      ],
+      "name": "InflationRewardServiceDailyAuthorizedInflationComputed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "contract IIInflationReceiver",
+          "name": "inflationReceiver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountWei",
+          "type": "uint256"
+        }
+      ],
+      "name": "InflationRewardServiceTopupComputed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "contract IIInflationReceiver",
+          "name": "inflationReceiver",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountWei",
+          "type": "uint256"
+        }
+      ],
+      "name": "InflationRewardServiceTopupRequestReceived",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122065c16c5101419f70cff14cb4e5cbed61d1db82ba27e564bc661a7ade6c0305cf64736f6c63430007060033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122065c16c5101419f70cff14cb4e5cbed61d1db82ba27e564bc661a7ade6c0305cf64736f6c63430007060033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

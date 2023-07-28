@@ -1,0 +1,48 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "WhitelisterGetterMock",
+  "sourceName": "contracts/utils/mock/WhitelisterGetterMock.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_voterWhitelister",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "getVoterWhitelister",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "voterWhitelister",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506040516101173803806101178339818101604052602081101561003357600080fd5b5051600080546001600160a01b039092166001600160a01b031990921691909117905560b3806100646000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c806371e1fad9146037578063c2b0d47b146059575b600080fd5b603d605f565b604080516001600160a01b039092168252519081900360200190f35b603d606e565b6000546001600160a01b031690565b6000546001600160a01b03168156fea26469706673582212202c3bf49d50ca8d03354da568a269ed31e66a357875aa85eca50884243e1370e964736f6c63430007060033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060325760003560e01c806371e1fad9146037578063c2b0d47b146059575b600080fd5b603d605f565b604080516001600160a01b039092168252519081900360200190f35b603d606e565b6000546001600160a01b031690565b6000546001600160a01b03168156fea26469706673582212202c3bf49d50ca8d03354da568a269ed31e66a357875aa85eca50884243e1370e964736f6c63430007060033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

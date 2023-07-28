@@ -7,7 +7,7 @@
   "dependencies": {
     "@google-cloud/secret-manager": "3.10.1",
     "@types/glob": "7.1.4",
-    "ccxt": "1.50.74",
+    "ccxt": "3.0.27",
     "ccxws": "0.43.1",
     "ethers": "5.1.4",
     "dotenv": "10.0.0",
