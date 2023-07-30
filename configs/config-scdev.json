@@ -12,8 +12,8 @@
         {
             "symbol": "XRP",
             "decimals": 5,
-            "priceProviderClass": "WsLimitedPriceProvider",
-            "priceProviderParams": ["XRP/USD", 1.0, [["bitstamp","XRP/USD"],["kraken","XRP/USD"],["bittrex","XRP/USD"]], "first"]
+            "priceProviderClass": "FilePriceProvider",
+            "priceProviderParams": ["XRP", "/home/dmchugh/data/predictions/predictions.json"]
         },
         {
             "symbol": "LTC",

@@ -34,6 +34,13 @@ let args = yargs
 
 // Reading configuration
 let conf: DataProviderConfiguration = JSON.parse(fs.readFileSync(args['config']).toString()) as DataProviderConfiguration;
+let pricesFromGetPrice: { [symbol: string]: number } = {};
+let totalEvents = 0;
+let totalHits = 0;
+let totalRewardHits = 0;
+let totalRewardEvents = 0;
+let totalEventsPerSymbol: { [symbol: string]: number } = {};
+let totalHitsPerSymbol: { [symbol: string]: number } = {};
 
 class DataProvider {
 
@@ -189,6 +196,7 @@ class DataProvider {
 
             let price = await p.priceProvider.getPrice();
             if (price) {
+                pricesFromGetPrice[p.symbol] = price;
                 let preparedPrice = this.preparePrice(price, p.decimals);
                 let random = this.getRandom();
                 let hash = priceHash(preparedPrice, random, this.account.address);
@@ -289,10 +297,10 @@ class DataProvider {
         }, epochRevealTimeEnd - new Date().getTime());
 
         if (diffSubmit > submitPeriod - conf.submitOffset && this.ftso2symbol.size >= this.ftsosCount) {
-             setTimeout(() => {
-                 this.logger.info(`Submit in ${diffSubmit - submitPeriod + conf.submitOffset}ms`)
-                 // this.execute(async () => { await this.submitPriceHashes(this.data); });
-             }, diffSubmit - submitPeriod + conf.submitOffset);
+            setTimeout(() => {
+                this.logger.info(`Submit in ${diffSubmit - submitPeriod + conf.submitOffset}ms`)
+                this.execute(async () => { await this.submitPriceHashes(this.data); });
+            }, diffSubmit - submitPeriod + conf.submitOffset);
 
             // setTimeout(() => {
             //     this.logger.info(`Reveal in ${diffSubmit + conf.revealOffset}ms`)
@@ -357,22 +365,60 @@ class DataProvider {
 
         this.logger.info("Subscribing to PriceFinalized events");
         const ethers = require('ethers');
-        
+
         this.ftsoContracts.forEach(contractWithSymbol => {
             contractWithSymbol.contract.on("PriceFinalized", async (
-                epochId: any, 
+                epochId: any,
                 price: any,
                 rewardedFtso: boolean,
-                lowIQRRewardPrice: any, 
-                highIQRRewardPrice: any, 
+                lowIQRRewardPrice: any,
+                highIQRRewardPrice: any,
                 lowElasticBandRewardPrice: any,
                 highElasticBandRewardPrice: any,
                 finalizationType: any,
                 timestamp: any) => {
-                    this.logger.info('PriceFinalized event received')
+                totalEvents++;
+                if (isNaN(totalEventsPerSymbol[contractWithSymbol.symbol])) {
+                    totalEventsPerSymbol[contractWithSymbol.symbol] = 0;
+                  }
+                totalEventsPerSymbol[contractWithSymbol.symbol]++;
                 this.logger.info(`Price finalized for ${contractWithSymbol.symbol} in epochId ${epochId}: price: ${(price / 10 ** 5).toFixed(5)}$,  finalization type: ${finalizationType}, rewarded: ${rewardedFtso}, low price: ${(lowIQRRewardPrice / 10 ** 5).toFixed(5)}$, high price: ${(highIQRRewardPrice / 10 ** 5).toFixed(5)}$, timestamp: ${timestamp.toString()}`)
+                
+                if (price === pricesFromGetPrice[contractWithSymbol.symbol]) {
+                    const difference = price - pricesFromGetPrice[contractWithSymbol.symbol];
+                    console.log(`The difference in prices for ${contractWithSymbol.symbol} is ${difference}.`);                
+                } 
+                const priceFromGetPrice = pricesFromGetPrice[contractWithSymbol.symbol];
+
+                if (priceFromGetPrice >= lowElasticBandRewardPrice && priceFromGetPrice <= highElasticBandRewardPrice) {
+                    console.log(`The price for ${contractWithSymbol.symbol} from getPrice is within the elastic band reward range.`);
+                    totalHits++;
+                    if (isNaN(totalHitsPerSymbol[contractWithSymbol.symbol])) {
+                        totalHitsPerSymbol[contractWithSymbol.symbol] = 0;
+                      }
+                    totalHitsPerSymbol[contractWithSymbol.symbol]++;
+                    if (rewardedFtso === true) {
+                        totalRewardHits++;
+                        console.log(`The price for ${contractWithSymbol.symbol} from getPrice is ${priceFromGetPrice}. The elastic band reward range is ${lowElasticBandRewardPrice} to ${highElasticBandRewardPrice}.`);
+                      }
+                  }
+                if (rewardedFtso === true) {
+                
+                    totalRewardEvents++;
+                }
+
                 const csvLine = `${contractWithSymbol.symbol},${epochId},${price},${finalizationType},${rewardedFtso},${(lowIQRRewardPrice / 10 ** 5).toFixed(5)},${(highIQRRewardPrice / 10 ** 5).toFixed(5)},${timestamp},${lowElasticBandRewardPrice},${highElasticBandRewardPrice}\n`;
                 fs.appendFileSync(csvFilePath, csvLine);
+              
+                const hitPercentage = ((totalHitsPerSymbol[contractWithSymbol.symbol] || 0) / totalEventsPerSymbol[contractWithSymbol.symbol]) * 100;
+                console.log(`The percentage of hits for ${contractWithSymbol.symbol} is ${hitPercentage}%.`);
+
+                const hitPercentageAll = (totalHits / totalEvents) * 100;
+                console.log(`The overall percentage of hits is ${hitPercentageAll}%.`);
+
+                const hitPercentageReward = (totalRewardHits / totalRewardEvents) * 100;
+                console.log(`The reward percentage of hits is ${ hitPercentageReward}%.`);
+ 
             })
         })
 
@@ -390,11 +436,11 @@ class DataProvider {
         let accountPrivateKey: string = ""
 
         this.logger.info(`Starting Flare Price Provider v${version}`)
-        
-        if ( process.env.PROJECT_SECRET!==undefined ) {
+
+        if (process.env.PROJECT_SECRET !== undefined) {
             this.logger.info(`   * account read from .env`)
             accountPrivateKey = (conf.accountPrivateKey as string)
-        } else if (process.env.PROJECT_SECRET!==undefined) {
+        } else if (process.env.PROJECT_SECRET !== undefined) {
             this.logger.info(`   * account read from secret '${process.env.PROJECT_SECRET}'`)
             accountPrivateKey = (await fetchSecret(process.env.PROJECT_SECRET as string) as string)
         } else {
