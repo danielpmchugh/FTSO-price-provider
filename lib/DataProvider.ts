@@ -196,7 +196,7 @@ class DataProvider {
 
             let price = await p.priceProvider.getPrice();
             if (price) {
-                pricesFromGetPrice[p.symbol] = price / 10000;
+                pricesFromGetPrice[p.symbol] = price;
                 let preparedPrice = this.preparePrice(price, p.decimals);
                 let random = this.getRandom();
                 let hash = priceHash(preparedPrice, random, this.account.address);
@@ -384,8 +384,8 @@ class DataProvider {
                 totalEventsPerSymbol[contractWithSymbol.symbol]++;
                 this.logger.info(`Price finalized for ${contractWithSymbol.symbol} in epochId ${epochId}: price: ${(price / 10 ** 5).toFixed(5)}$,  finalization type: ${finalizationType}, rewarded: ${rewardedFtso}, low price: ${(lowIQRRewardPrice / 10 ** 5).toFixed(5)}$, high price: ${(highIQRRewardPrice / 10 ** 5).toFixed(5)}$, timestamp: ${timestamp.toString()}`)
                 
-                const difference = price - pricesFromGetPrice[contractWithSymbol.symbol];
-                this.logger.info(`The difference in prices for ${contractWithSymbol.symbol} is ${difference}.`);                
+                const difference = price / 10 ** 5 - pricesFromGetPrice[contractWithSymbol.symbol];
+                this.logger.info(`Price is ${pricesFromGetPrice[contractWithSymbol.symbol]} the difference in prices for ${contractWithSymbol.symbol} is ${difference}.`);                
                 const priceFromGetPrice = pricesFromGetPrice[contractWithSymbol.symbol];
 
                 if (priceFromGetPrice >= lowElasticBandRewardPrice && priceFromGetPrice <= highElasticBandRewardPrice) {
