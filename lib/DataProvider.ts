@@ -196,7 +196,7 @@ class DataProvider {
 
             let price = await p.priceProvider.getPrice();
             if (price) {
-                pricesFromGetPrice[p.symbol] = price;
+                pricesFromGetPrice[p.symbol] = price / 10000;
                 let preparedPrice = this.preparePrice(price, p.decimals);
                 let random = this.getRandom();
                 let hash = priceHash(preparedPrice, random, this.account.address);
@@ -384,14 +384,12 @@ class DataProvider {
                 totalEventsPerSymbol[contractWithSymbol.symbol]++;
                 this.logger.info(`Price finalized for ${contractWithSymbol.symbol} in epochId ${epochId}: price: ${(price / 10 ** 5).toFixed(5)}$,  finalization type: ${finalizationType}, rewarded: ${rewardedFtso}, low price: ${(lowIQRRewardPrice / 10 ** 5).toFixed(5)}$, high price: ${(highIQRRewardPrice / 10 ** 5).toFixed(5)}$, timestamp: ${timestamp.toString()}`)
                 
-                if (price === pricesFromGetPrice[contractWithSymbol.symbol]) {
-                    const difference = price - pricesFromGetPrice[contractWithSymbol.symbol];
-                    console.log(`The difference in prices for ${contractWithSymbol.symbol} is ${difference}.`);                
-                } 
+                const difference = price - pricesFromGetPrice[contractWithSymbol.symbol];
+                this.logger.info(`The difference in prices for ${contractWithSymbol.symbol} is ${difference}.`);                
                 const priceFromGetPrice = pricesFromGetPrice[contractWithSymbol.symbol];
 
                 if (priceFromGetPrice >= lowElasticBandRewardPrice && priceFromGetPrice <= highElasticBandRewardPrice) {
-                    console.log(`The price for ${contractWithSymbol.symbol} from getPrice is within the elastic band reward range.`);
+                    this.logger.info(`The price for ${contractWithSymbol.symbol} from getPrice is within the elastic band reward range.`);
                     totalHits++;
                     if (isNaN(totalHitsPerSymbol[contractWithSymbol.symbol])) {
                         totalHitsPerSymbol[contractWithSymbol.symbol] = 0;
@@ -399,7 +397,7 @@ class DataProvider {
                     totalHitsPerSymbol[contractWithSymbol.symbol]++;
                     if (rewardedFtso === true) {
                         totalRewardHits++;
-                        console.log(`The price for ${contractWithSymbol.symbol} from getPrice is ${priceFromGetPrice}. The elastic band reward range is ${lowElasticBandRewardPrice} to ${highElasticBandRewardPrice}.`);
+                        this.logger.info(`The price for ${contractWithSymbol.symbol} from getPrice is ${priceFromGetPrice}. The elastic band reward range is ${lowElasticBandRewardPrice} to ${highElasticBandRewardPrice}.`);
                       }
                   }
                 if (rewardedFtso === true) {
@@ -411,13 +409,13 @@ class DataProvider {
                 fs.appendFileSync(csvFilePath, csvLine);
               
                 const hitPercentage = ((totalHitsPerSymbol[contractWithSymbol.symbol] || 0) / totalEventsPerSymbol[contractWithSymbol.symbol]) * 100;
-                console.log(`The percentage of hits for ${contractWithSymbol.symbol} is ${hitPercentage}%.`);
+                this.logger.info(`The percentage of hits for ${contractWithSymbol.symbol} is ${hitPercentage}%.`);
 
                 const hitPercentageAll = (totalHits / totalEvents) * 100;
-                console.log(`The overall percentage of hits is ${hitPercentageAll}%.`);
+                this.logger.info(`The overall percentage of hits is ${hitPercentageAll}%.`);
 
                 const hitPercentageReward = (totalRewardHits / totalRewardEvents) * 100;
-                console.log(`The reward percentage of hits is ${ hitPercentageReward}%.`);
+                this.logger.info(`The reward percentage of hits is ${ hitPercentageReward}%.`);
  
             })
         })
